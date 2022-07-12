@@ -9,5 +9,15 @@ export type Dictionary = {
             libre: string;
             flatIcon: string;
         };
+        message: {
+            tryAgain: string;
+            wentWrong: string;
+            noSupport: string;
+        };
+    };
+    screen: {
+        translator: {
+            loading: string;
+        };
     };
 };

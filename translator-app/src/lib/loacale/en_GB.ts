@@ -11,5 +11,15 @@ export const en_gb: Dictionary = {
             libre: 'LibreTranslator',
             flatIcon: 'FlatIcon',
         },
+        message: {
+            tryAgain: 'Try again',
+            wentWrong: 'Something went wrong',
+            noSupport: 'No supported language',
+        },
+    },
+    screen: {
+        translator: {
+            loading: 'Fetching supported languages...',
+        },
     },
 };
