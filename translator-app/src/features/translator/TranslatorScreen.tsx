@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { APP_CONFIG } from 'lib/config';
 import React, { useState } from 'react';
 import {
     LanguageSelect,
@@ -15,12 +16,16 @@ type TranslatorScreenProps = {
 
 import { Language, LanguageCode } from 'lib/models';
 import { SelectedLanguage } from './types';
+import { useTranslation } from 'lib/hooks';
 
 export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = ({ languages }) => {
     const [selectedLanguage, setSelectedLanguage] = useState<SelectedLanguage>({
         source: LanguageCode.Auto,
         target: LanguageCode.Polish,
     });
+
+    const T = useTranslation();
+    const [querry, setQuerry] = useState<string>('');
 
     return (
         <Container>
@@ -37,13 +42,25 @@ export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = 
                         }}
                         selectedLanguage={selectedLanguage.source}
                     />
-                    <TextInput />
+                    <TextInput
+                        autoFocus
+                        onChangeText={(newQuerry) => {
+                            if (newQuerry.length <= APP_CONFIG.TEXT_INPUT_LIMIT) {
+                                setQuerry(newQuerry);
+                            }
+                        }}
+                        placeholder={T.components.message.placeholderTextArea}
+                        value={querry}
+                    />
                     <LoaderContainer>
                         <Loader />
                     </LoaderContainer>
                     <InputFooter>
                         <Confidence />
-                        <TextCounter />
+                        <TextCounter
+                            counter={querry.length}
+                            textLimit={APP_CONFIG.TEXT_INPUT_LIMIT}
+                        />
                     </InputFooter>
                 </InputContainer>
                 <ExchangeLanguage
@@ -67,7 +84,7 @@ export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = 
                         }}
                         selectedLanguage={selectedLanguage.target}
                     />
-                    <TextInput />
+                    <TextInput disabled />
                     <LoaderContainer>
                         <Loader />
                     </LoaderContainer>

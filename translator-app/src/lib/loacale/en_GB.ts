@@ -18,6 +18,7 @@ export const en_gb: Dictionary = {
             tryAgain: 'Try again',
             wentWrong: 'Something went wrong...',
             noSupport: 'No supported language',
+            placeholderTextArea: 'Type text here...',
         },
     },
     screen: {

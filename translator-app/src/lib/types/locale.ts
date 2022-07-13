@@ -16,6 +16,7 @@ export type Dictionary = {
             tryAgain: string;
             wentWrong: string;
             noSupport: string;
+            placeholderTextArea: string;
         };
     };
     screen: {
