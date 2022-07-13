@@ -23,7 +23,7 @@ const ActivityIndicator = styled.div`
 
     animation: loading 1s linear infinite alternate;
 
-    @keyframes loading {
+    @keyframes loading2 {
         0% {
             width: 0;
         }
