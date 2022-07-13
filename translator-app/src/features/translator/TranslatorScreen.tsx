@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import { APP_CONFIG } from 'lib/config';
-import React, { useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import React from 'react';
+import { Language, LanguageCode } from 'lib/models';
+import { useTranslation } from 'lib/hooks';
+import { useLibreTranslare } from './useLibreTranslare';
 import {
     LanguageSelect,
     Loader,
@@ -15,39 +17,24 @@ type TranslatorScreenProps = {
     languages: Array<Language>;
 };
 
-import { AutoDetectedLanguage, Language, LanguageCode } from 'lib/models';
-import { SelectedLanguage } from './types';
-import { useTranslation } from 'lib/hooks';
-import { useAutoDetectedLanguage } from './actions';
-
 export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = ({ languages }) => {
-    const [selectedLanguage, setSelectedLanguage] = useState<SelectedLanguage>({
-        source: LanguageCode.German,
-        target: LanguageCode.Polish,
-    });
-
     const T = useTranslation();
-    const [querry, setQuerry] = useState<string>('');
-    const [autoDetectedLanguage, setAutoDetectedLanguage] = useState<AutoDetectedLanguage>({
-        confidence: 80,
-        language: LanguageCode.Polish,
-    });
 
     const {
-        fetch: detectedLanguage,
-        hasError,
-        isLoading,
-    } = useAutoDetectedLanguage(setAutoDetectedLanguage);
-
-    const debouncedAutoDetectedLanguage = useDebouncedCallback((debouncedQuery) => {
-        if (debouncedQuery.length < 5) {
-            return;
-        }
-
-        if (selectedLanguage.source === LanguageCode.Auto) {
-            detectedLanguage(debouncedQuery);
-        }
-    }, 1000);
+        selectedLanguage,
+        debouncedAction,
+        hasErroDetectedLanguage,
+        setQuerry,
+        setSelectedLanguage,
+        autoDetectedLanguage,
+        hasErrorTranslatingText,
+        isLoadingDetectedLanguage,
+        isTranslatingText,
+        querry,
+        translatedText,
+        setAutoDetectedLanguage,
+        setTranslatedText,
+    } = useLibreTranslare();
 
     return (
         <Container>
@@ -70,17 +57,20 @@ export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = 
                             if (newQuerry.length > APP_CONFIG.TEXT_INPUT_LIMIT) {
                                 return;
                             }
-                            setQuerry(newQuerry);
 
-                            debouncedAutoDetectedLanguage(newQuerry);
+                            setQuerry(newQuerry);
+                            debouncedAction();
                         }}
                         placeholder={T.components.message.placeholderTextArea}
                         value={querry}
                     />
-                    <LoaderContainer>{isLoading && <Loader />}</LoaderContainer>
+                    <LoaderContainer>{isLoadingDetectedLanguage && <Loader />}</LoaderContainer>
                     <InputFooter>
                         <Confidence
-                            hasError={hasError && selectedLanguage.source === LanguageCode.Auto}
+                            hasError={
+                                hasErroDetectedLanguage &&
+                                selectedLanguage.source === LanguageCode.Auto
+                            }
                             autoDetectedLanguage={autoDetectedLanguage}
                             onClick={() => {
                                 setSelectedLanguage((prevState) => ({
@@ -88,10 +78,8 @@ export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = 
                                     source: autoDetectedLanguage?.language as LanguageCode,
                                 }));
 
-                                setAutoDetectedLanguage({
-                                    confidence: 0,
-                                    language: LanguageCode.Chinese,
-                                });
+                                setAutoDetectedLanguage(undefined);
+                                debouncedAction();
                             }}
                         />
                         <TextCounter
@@ -107,6 +95,8 @@ export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = 
                             source: prevState.target,
                             target: prevState.source,
                         }));
+                        setQuerry('');
+                        setTranslatedText('');
                     }}
                 />
                 <InputContainer>
@@ -121,10 +111,8 @@ export const TranslatorScreen: React.FunctionComponent<TranslatorScreenProps> = 
                         }}
                         selectedLanguage={selectedLanguage.target}
                     />
-                    <TextInput disabled />
-                    <LoaderContainer>
-                        <Loader />
-                    </LoaderContainer>
+                    <TextInput disabled value={translatedText} hasError={hasErrorTranslatingText} />
+                    <LoaderContainer>{isTranslatingText && <Loader />}</LoaderContainer>
                 </InputContainer>
             </TranslatorContainer>
         </Container>
@@ -135,18 +123,22 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     flex: 1;
-    width: 70%;
-    margin: 0 auto;
-    @media (max-width: 1400px) {
-        width: 100%;
-    }
 `;
 
 const TranslatorContainer = styled.div`
     display: flex;
-    justify-content: space-evenly;
-    margin-top: 80px;
+    justify-content: space-around;
+    margin-top: 100px;
     height: 70%;
+    @media (min-width: ${({ theme }) => theme.media.sm}px) {
+        justify-content: center;
+        gap: 30px;
+    }
+
+    @media (max-width: ${({ theme }) => theme.media.sm}px) {
+        flex-direction: column;
+        align-items: center;
+    }
 `;
 
 const InputContainer = styled.div`
@@ -158,6 +150,7 @@ const InputContainer = styled.div`
 const LoaderContainer = styled.div`
     padding: 5px 10px;
     height: 2px;
+    margin-bottom: 2px;
 `;
 
 const InputFooter = styled.div`

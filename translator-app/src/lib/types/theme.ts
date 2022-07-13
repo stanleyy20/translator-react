@@ -7,4 +7,9 @@ export type AppTheme = {
         typography: string;
         input: string;
     };
+    media: {
+        sm: number;
+        md: number;
+        lg: number;
+    };
 };

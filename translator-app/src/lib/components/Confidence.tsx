@@ -10,13 +10,13 @@ type LanguageProps = {
 type ConfidenceProps = {
     hasError: boolean;
     onClick(): void;
-    autoDetectedLanguage: AutoDetectedLanguage;
+    autoDetectedLanguage?: AutoDetectedLanguage;
 };
 
 export const Confidence: React.FunctionComponent<ConfidenceProps> = ({
-    autoDetectedLanguage,
     hasError,
     onClick,
+    autoDetectedLanguage,
 }) => {
     const T = useTranslation();
 
@@ -26,7 +26,9 @@ export const Confidence: React.FunctionComponent<ConfidenceProps> = ({
         }
 
         const [detectedLanguage] =
-            Object.entries(LanguageCode).find(([, languageCode]) => languageCode) || [];
+            Object.entries(LanguageCode).find(
+                ([, languageCode]) => autoDetectedLanguage?.language === languageCode
+            ) || [];
 
         return detectedLanguage ? `(${detectedLanguage})` : undefined;
     }, [autoDetectedLanguage?.language]);
