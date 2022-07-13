@@ -1,8 +1,17 @@
 import styled from 'styled-components';
 import { Images } from 'assets';
+import React from 'react';
 
-export const ExchangeLanguage = () => {
-    return <Exchange src={Images.Exchange} />;
+type ExchangeLanguageProps = {
+    onClick(): void;
+    hidden: boolean;
+};
+
+export const ExchangeLanguage: React.FunctionComponent<ExchangeLanguageProps> = ({
+    onClick,
+    hidden,
+}) => {
+    return <>{hidden && <Exchange src={Images.Exchange} onClick={onClick} hidden />}</>;
 };
 
 const Exchange = styled.img`

@@ -1,10 +1,40 @@
+import { Language, LanguageCode } from 'lib/models';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 
-export const LanguageSelect = () => {
+type LanguageSelectProps = {
+    languages: Array<Language>;
+    selectedLanguage: LanguageCode;
+    exclude: Array<LanguageCode>;
+    onChange(newLanguage: LanguageCode): void;
+};
+
+export const LanguageSelect: React.FunctionComponent<LanguageSelectProps> = ({
+    exclude,
+    languages,
+    onChange,
+    selectedLanguage,
+}) => {
+    const filteredLanguages = useMemo(
+        () =>
+            languages
+                .filter((language) => exclude.includes(language.code))
+                .map((languages) => ({
+                    key: languages.code,
+                    label: languages.name,
+                })),
+        [languages, exclude]
+    );
+
     return (
-        <Select>
-            <Option>Polish</Option>
-            <Option>English</Option>
+        <Select
+            value={selectedLanguage}
+            onChange={(event) => onChange(event.target.value as LanguageCode)}>
+            {filteredLanguages.map((language) => (
+                <Option key={language.key} value={language.key}>
+                    {language.label}
+                </Option>
+            ))}
         </Select>
     );
 };

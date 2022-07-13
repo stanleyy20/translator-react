@@ -1,4 +1,13 @@
 export type Language = {
-    code: string;
+    code: LanguageCode;
     name: string;
 };
+
+export enum LanguageCode {
+    Auto = 'auto',
+    English = 'en',
+    Chinese = 'zh',
+    Polish = 'pl',
+    German = 'de',
+    Spanish = 'es',
+}
