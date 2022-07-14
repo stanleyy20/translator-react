@@ -11,3 +11,10 @@ Translator uses LibreTranslate API
 npm install
 
 npm run dev
+
+As LibreTranslate is paid, you can use the docer and run the API locally on your computer, just install docker desktop 
+run the command in the console docker-compose up.
+
+If you want to use the API available on the Internet, you need to change the link in the configuration file to https://libretranslate.com/
+
+![config](https://user-images.githubusercontent.com/98091205/178948344-223950d3-ed19-40e7-b397-b5a292575cf6.jpg)
